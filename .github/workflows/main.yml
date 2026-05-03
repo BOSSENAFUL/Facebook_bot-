@@ -1,0 +1,28 @@
+name: Enaful Bot Deploy
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '*/25 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: node index.js
+      - name: Keep Alive
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "Developed by ENAFUL - Group Only Mode"
+          git push
