@@ -25,20 +25,15 @@ login({ appState }, (err, api) => {
     api.listenMqtt((err, event) => {
         if (err || !event) return;
 
-        // ইনবক্স (Private Message) হলে সরাসরি ইগনোর করবে
+        // ইনবক্স (Private Message) হলে ইগনোর করবে
         if (!event.isGroup) return;
 
-        // শুধু গ্রুপ মেসেজ বা মিডিয়া (ছবি/ভিডিও) আসলে রিঅ্যাক্ট দিবে
+        // শুধু গ্রুপ মেসেজ বা মিডিয়াতে রিঅ্যাক্ট দিবে
         if (event.type === "message" || event.type === "message_reply") {
             try {
-                const randomEmoji = emojiData.reactList[Math.floor(Math.random() * emojiData.reactList.length)];
-                
-                api.setMessageReaction(randomEmoji, event.messageID, (err) => {
-                    if (err) console.log("রিঅ্যাক্ট দিতে সমস্যা হচ্ছে, আইডি লিমিট হতে পারে।");
-                }, true);
-            } catch (e) {
-                console.error("Error setting reaction:", e);
-            }
-        }
-    });
-});
+                const reactions = emojiData.reactList;
+                if (reactions && reactions.length > 0) {
+                    const randomEmoji = reactions[Math.floor(Math.random() * reactions.length)];
+                    
+                    api.setMessageReaction(randomEmoji, event.messageID, (err) => {
+                        if (err) console.log("Reaction
