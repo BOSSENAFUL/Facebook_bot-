@@ -1,29 +1,28 @@
 import login from "fca-project-orion";
 import fs from "fs-extra";
 
+const config = fs.readJsonSync("./config.json");
 const emojiData = fs.readJsonSync("./emojis.json");
 const appState = fs.readJsonSync("./appstate.json");
 
 login({ appState }, (err, api) => {
-    if (err) return console.error("লগইন ফেইল! কুকি আপডেট করুন বস।");
+    if (err) return console.error("লগইন ফেইল বস! নতুন কুকি দিন।");
 
     api.setOptions({ listenEvents: true, selfListen: false, forceLogin: true });
-    console.log(`[ ONLINE ] Group React Bot is active.`);
-    console.log(`[ CREDIT ] Developed by ENAFUL`);
+    console.log(`[ ONLINE ] Developed by ENAFUL - Group React Mode`);
 
     api.listenMqtt((err, event) => {
         if (err || !event) return;
 
-        // চেক করা হচ্ছে মেসেজটি গ্রুপ থেকে এসেছে কি না
-        if ((event.type === "message" || event.type === "message_reply") && event.isGroup === true) {
-            
-            // র‍্যান্ডম ইমোজি সিলেক্ট করা
-            const emojis = emojiData.reactList;
-            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+        // ইনবক্স মেসেজ হলে সরাসরি ইগনোর করবে
+        if (!event.isGroup) return;
 
-            // শুধুমাত্র গ্রুপ মেসেজে রিঅ্যাক্ট দেওয়া
+        // শুধু গ্রুপ মেসেজ বা মিডিয়া হলে রিঅ্যাক্ট দিবে
+        if (event.type === "message" || event.type === "message_reply") {
+            const randomEmoji = emojiData.reactList[Math.floor(Math.random() * emojiData.reactList.length)];
+            
             api.setMessageReaction(randomEmoji, event.messageID, (err) => {
-                if (err) console.log("রিঅ্যাক্ট দিতে সমস্যা হচ্ছে।");
+                if (err) console.log("রিঅ্যাক্ট লিমিট হতে পারে বস।");
             }, true);
         }
     });
