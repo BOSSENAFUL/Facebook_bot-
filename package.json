@@ -1,0 +1,11 @@
+{
+  "name": "enaful-group-react-bot",
+  "version": "4.1.0",
+  "description": "Developer by ENAFUL",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "fca-project-orion": "latest",
+    "fs-extra": "latest"
+  }
+}
