@@ -1,28 +1,38 @@
-name: Enaful Bot Deploy
+name: CYBER ENAFUL BOT CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   schedule:
-    - cron: '*/25 * * * *'
-  workflow_dispatch:
-
-permissions:
-  contents: write
+    # প্রতি ৫ ঘণ্টা পর পর গিটহাব অ্যাকশনস স্বয়ংক্রিয়ভাবে বট রিস্টার্ট বা রান করবে যাতে ২৪/৭ সচল থাকে
+    - cron: '0 */5 * * *'
+  workflow_dispatch: # গিটহাব ড্যাশবোর্ড থেকে ম্যানুয়ালি রান করার বাটন অ্যাক্টিভ করবে
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm install
-      - run: node index.js
-      - name: Keep Alive
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git commit --allow-empty -m "Developed by ENAFUL - Group Only Mode"
-          git push
+    - name: Checkout Repository Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # আপনার বটের জন্য পারফেক্ট এবং স্ট্যাবল নোড ভার্সন
+        cache: 'npm'
+
+    - name: Install Project Dependencies
+      run: |
+        npm install
+        # যদি chalk বা অন্য কোনো প্যাকেজে বাগ থাকে তার জন্য সেফটি ইনস্টলেশন
+        npm install chalk@4.1.2 fs-extra
+
+    - name: Start CYBERENAFUL BOT
+      run: npm start
+      env:
+        CI: true
